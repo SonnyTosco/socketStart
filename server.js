@@ -13,6 +13,24 @@ app.get('/', function(req, res) {
  res.render("index");
 })
 // tell the express app to listen on port 8000
-app.listen(8000, function() {
+// app.listen(8000, function() {
+//  console.log("listening on port 8000");
+// })
+// this selects our port and listens
+// note that we're now storing our app.listen within
+// a variable called server. this is important!!
+var server = app.listen(8000, function() {
  console.log("listening on port 8000");
-})
+});
+// this is a new line we're adding AFTER our server listener
+// take special note how we're passing the server
+// variable. unless we have the server variable, this line will not work!!
+var io = require('socket.io').listen(server)
+io.sockets.on('connection', function (socket) {
+  console.log("WE ARE USING SOCKETS!");
+  console.log(socket.id);
+  socket.on("button_clicked", function (data){
+    console.log('Someone clicked a button!  Reason: ' + data.reason);
+    socket.emit('server_response', {response: "sockets are the best!"});
+  });
+});
